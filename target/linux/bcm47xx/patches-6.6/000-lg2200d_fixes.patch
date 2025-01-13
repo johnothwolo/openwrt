@@ -1,0 +1,87 @@
+diff --git a/arch/mips/bcm47xx/board.c b/arch/mips/bcm47xx/board.c
+index b487f687f..6f31e09ff 100644
+--- a/arch/mips/bcm47xx/board.c
++++ b/arch/mips/bcm47xx/board.c
+@@ -187,6 +187,7 @@ struct bcm47xx_board_type_list1 bcm47xx_board_list_board_id[] __initconst = {
+ 	{{BCM47XX_BOARD_NETGEAR_WNR3500V2, "Netgear WNR3500 V2"}, "U12H127T00_NETGEAR"},
+ 	{{BCM47XX_BOARD_NETGEAR_WNR3500V2VC, "Netgear WNR3500 V2vc"}, "U12H127T70_NETGEAR"},
+ 	{{BCM47XX_BOARD_NETGEAR_WNR834BV2, "Netgear WNR834B V2"}, "U12H081T00_NETGEAR"},
++	{{BCM47XX_BOARD_NETGEAR_LG2200D_V1, "Netgear LG2200D V1"}, "U12H222T00_NETGEAR"}, // also known as MBRN2000
+ 	{ {0}, NULL},
+ };
+ 
+@@ -197,6 +198,7 @@ struct bcm47xx_board_type_list3 bcm47xx_board_list_board[] __initconst = {
+ 	{{BCM47XX_BOARD_HUAWEI_E970, "Huawei E970"}, "0x048e", "0x5347", "0x11"},
+ 	{{BCM47XX_BOARD_PHICOMM_M1, "Phicomm M1"}, "0x0590", "80", "0x1104"},
+ 	{{BCM47XX_BOARD_ZTE_H218N, "ZTE H218N"}, "0x053d", "1234", "0x1305"},
++	{{BCM47XX_BOARD_NETGEAR_LG2200D_V1, "Netgear LG2200D V1"}, "0x053d", "01", "0x1340"},
+ 	{{BCM47XX_BOARD_NETGEAR_WNR3500L, "Netgear WNR3500L"}, "0x04CF", "3500", "02"},
+ 	{{BCM47XX_BOARD_NETGEAR_WNR3500L_V2, "Netgear WNR3500L V2"}, "0x052b", "3500L", "02"},
+ 	{{BCM47XX_BOARD_LINKSYS_WRT54G_TYPE_0101, "Linksys WRT54G/GS/GL"}, "0x0101", "42", "0x10"},
+diff --git a/arch/mips/bcm47xx/buttons.c b/arch/mips/bcm47xx/buttons.c
+index 437a737c0..a585d69a1 100644
+--- a/arch/mips/bcm47xx/buttons.c
++++ b/arch/mips/bcm47xx/buttons.c
+@@ -415,6 +415,12 @@ bcm47xx_buttons_netgear_r6200_v1[] __initconst = {
+ 	BCM47XX_GPIO_KEY(4, KEY_WPS_BUTTON),
+ };
+ 
++static const struct gpio_keys_button
++bcm47xx_buttons_netgear_lg2200d_v1[] __initconst = {
++	BCM47XX_GPIO_KEY(23, KEY_WPS_BUTTON),
++	BCM47XX_GPIO_KEY(21, KEY_RESTART), /* Hard reset */
++};
++
+ static const struct gpio_keys_button
+ bcm47xx_buttons_netgear_r6300_v1[] __initconst = {
+ 	BCM47XX_GPIO_KEY(6, KEY_RESTART),
+@@ -728,6 +734,8 @@ int __init bcm47xx_buttons_register(void)
+ 	case BCM47XX_BOARD_NETGEAR_R6200_V1:
+ 		err = bcm47xx_copy_bdata(bcm47xx_buttons_netgear_r6200_v1);
+ 		break;
++	case BCM47XX_BOARD_NETGEAR_LG2200D_V1:
++		err = bcm47xx_copy_bdata(bcm47xx_buttons_netgear_lg2200d_v1);break;
+ 	case BCM47XX_BOARD_NETGEAR_R6300_V1:
+ 		err = bcm47xx_copy_bdata(bcm47xx_buttons_netgear_r6300_v1);
+ 		break;
+diff --git a/arch/mips/bcm47xx/leds.c b/arch/mips/bcm47xx/leds.c
+index 64e37505b..1c4bfdc30 100644
+--- a/arch/mips/bcm47xx/leds.c
++++ b/arch/mips/bcm47xx/leds.c
+@@ -547,6 +547,14 @@ bcm47xx_leds_netgear_wnr834bv2[] __initconst = {
+ 	BCM47XX_GPIO_LED(7, "unk", "connected", 0, LEDS_GPIO_DEFSTATE_OFF),
+ };
+ 
++static const struct gpio_led
++bcm47xx_leds_netgear_lg2200dv1[] __initconst = {
++	BCM47XX_GPIO_LED(3, "white", "wlan", 0, LEDS_GPIO_DEFSTATE_OFF),
++	// BCM47XX_GPIO_LED(2, "white", "power", 0, LEDS_GPIO_DEFSTATE_ON), // dome_led?
++	BCM47XX_GPIO_LED(6, "white", "usb", 1, LEDS_GPIO_DEFSTATE_OFF),
++	BCM47XX_GPIO_LED(19, "white", "wps", 0, LEDS_GPIO_DEFSTATE_OFF),
++};
++
+ /* Siemens */
+ static const struct gpio_led
+ bcm47xx_leds_siemens_se505v2[] __initconst = {
+@@ -813,6 +821,9 @@ void __init bcm47xx_leds_register(void)
+ 	case BCM47XX_BOARD_NETGEAR_WNR834BV2:
+ 		bcm47xx_set_pdata(bcm47xx_leds_netgear_wnr834bv2);
+ 		break;
++	case BCM47XX_BOARD_NETGEAR_LG2200D_V1:
++		bcm47xx_set_pdata(bcm47xx_leds_netgear_lg2200dv1);
++		break;
+ 
+ 	case BCM47XX_BOARD_SIEMENS_SE505V2:
+ 		bcm47xx_set_pdata(bcm47xx_leds_siemens_se505v2);
+diff --git a/arch/mips/include/asm/mach-bcm47xx/bcm47xx_board.h b/arch/mips/include/asm/mach-bcm47xx/bcm47xx_board.h
+index 4bd8c86ec..d5d4a1def 100644
+--- a/arch/mips/include/asm/mach-bcm47xx/bcm47xx_board.h
++++ b/arch/mips/include/asm/mach-bcm47xx/bcm47xx_board.h
+@@ -125,6 +125,7 @@ enum bcm47xx_board {
+ 	BCM47XX_BOARD_NETGEAR_WNR3500V2,
+ 	BCM47XX_BOARD_NETGEAR_WNR3500V2VC,
+ 	BCM47XX_BOARD_NETGEAR_WNR834BV2,
++	BCM47XX_BOARD_NETGEAR_LG2200D_V1,
+ 
+ 	BCM47XX_BOARD_PHICOMM_M1,
+ 

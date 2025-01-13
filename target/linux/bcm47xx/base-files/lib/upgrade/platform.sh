@@ -25,6 +25,7 @@ platform_expected_image() {
 		"Netgear WN2500RP V1")	echo "chk U12H197T00_NETGEAR"; return;;
 		"Netgear WN2500RP V2")	echo "chk U12H294T00_NETGEAR"; return;;
 		"Netgear WNDR3300")	echo "chk U12H093T00_NETGEAR"; return;;
+		"Netgear LG2200D V1")	echo "chk U12H222T00_NETGEAR"; return;;
 		"Netgear WNDR3400 V1")	echo "chk U12H155T00_NETGEAR"; return;;
 		"Netgear WNDR3400 V2")	echo "chk U12H187T00_NETGEAR"; return;;
 		"Netgear WNDR3400 V3")	echo "chk U12H208T00_NETGEAR"; return;;

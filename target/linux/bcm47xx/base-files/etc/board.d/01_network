@@ -151,6 +151,7 @@ configure_by_model() {
 	"Buffalo WHR-G125" | \
 	"D-Link DIR-330" | \
 	"Motorola WR850G" | \
+	"Netgear LG2200D V1" | \
 	"Siemens SE505 V2")
 		ucidef_add_switch "switch0" \
 			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "5@eth0"

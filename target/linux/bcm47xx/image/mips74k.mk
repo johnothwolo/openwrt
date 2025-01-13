@@ -375,6 +375,16 @@ define Device/netgear_wn3000rp
 endef
 TARGET_DEVICES += netgear_wn3000rp
 
+define Device/netgear_lg2200d-v1
+  DEVICE_MODEL := LG2200D
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-tg3 kmod-b43 $(USB2_PACKAGES)
+  $(Device/netgear)
+  NETGEAR_BOARD_ID := U12H222T00_NETGEAR
+  NETGEAR_REGION := 2
+endef
+TARGET_DEVICES += netgear_lg2200d-v1
+
 define Device/netgear_wndr3400-v1
   DEVICE_MODEL := WNDR3400
   DEVICE_VARIANT := v1
